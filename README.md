@@ -6,8 +6,6 @@
 
 An interactive web application designed to solve the daily **LinkedIn Queens** puzzle (and other Star Battle variants). This tool allows you to play manually, get hints, or use AI to auto-detect and solve puzzles from screenshots.
 
-![Queens Solver Banner](https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6)
-
 ## ✨ Features
 
 -   **Manual Play**: Test your logic skills by solving puzzles yourself.
