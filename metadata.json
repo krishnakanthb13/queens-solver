@@ -1,0 +1,5 @@
+{
+  "name": "Queens Puzzle Solver",
+  "description": "An interactive solver for the popular Queens logic puzzle. Draw regions manually or upload a screenshot to auto-detect the layout using Gemini Vision.",
+  "requestFramePermissions": []
+}
