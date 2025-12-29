@@ -56,7 +56,7 @@ export const parsePuzzleFromImage = async (
       },
       config: {
         systemInstruction: SYSTEM_PROMPT,
-        thinkingConfig: { thinkingBudget: 32768 }, // Maximize budget for best reasoning
+        thinkingConfig: { thinkingBudget: 24000 }, // Maximize budget for best reasoning
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
