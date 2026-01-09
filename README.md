@@ -16,6 +16,7 @@ An interactive web application designed to solve the daily **LinkedIn Queens** p
     -   **Google Gemini** (Gemini 3 Pro) - Direct Google API integration
 -   **Edit Mode**: Create and test your own custom board layouts.
 -   **Solve History**: Keep track of your solved puzzles and durations.
+-   **Save Logs**: Export your solve history to a text file for your records.
 -   **Dark Mode**: A sleek, premium interface that's easy on the eyes.
 
 ## 🚀 Getting Started

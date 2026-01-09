@@ -43,7 +43,8 @@ import {
   Clock,
   ChevronRight,
   Eye,
-  Sparkles
+  Sparkles,
+  Download
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -119,6 +120,32 @@ const App: React.FC = () => {
       setHistory([]);
       localStorage.removeItem('queens-solver-history');
     }
+  };
+
+  const saveLogs = () => {
+    if (history.length === 0) {
+      alert("No history logs to save.");
+      return;
+    }
+
+    const logContent = history.map(item => {
+      return `Timestamp: ${new Date(item.timestamp).toLocaleString()}\n` +
+             `ID: ${item.id}\n` +
+             `Grid Size: ${item.gridSize}x${item.gridSize}\n` +
+             `Solve Duration: ${formatDuration(item.durationMs)}\n` +
+             `Solution Queens (row, col): ${item.solution.map(p => `(${p.r}, ${p.c})`).join(', ')}\n` +
+             `----------------------------------------`;
+    }).join('\n\n');
+
+    const blob = new Blob([logContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'queens_solver_logs.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const loadHistoryItem = (item: HistoryItem) => {
@@ -660,13 +687,22 @@ const App: React.FC = () => {
               </h2>
               <div className="flex gap-2">
                 {history.length > 0 && (
-                  <button
-                    onClick={clearHistory}
-                    className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                    title="Clear History"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
+                  <>
+                    <button
+                      onClick={saveLogs}
+                      className="p-2 text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                      title="Save Logs"
+                    >
+                      <Download className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={clearHistory}
+                      className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      title="Clear History"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </>
                 )}
                 <button
                   onClick={() => setShowHistoryModal(false)}

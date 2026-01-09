@@ -30,6 +30,14 @@ The app supports **3 AI providers** for screenshot-to-puzzle extraction:
 
 Users can switch between providers using the toggle buttons in the UI. The default is **AIML** (Gemini 3 Pro).
 
+## 📜 History & Logging
+
+The application maintains a local history of your solved puzzles. You can access this via the **History** button in the top-right corner.
+
+-   **View History**: Replay previous puzzles.
+-   **Save Logs**: Download your complete solve history as `queens_solver_logs.txt`.
+-   **Clear History**: Permanently delete all logs.
+
 ## 🔧 Configuration
 
 Environment variables are configured in `.env.local`:
