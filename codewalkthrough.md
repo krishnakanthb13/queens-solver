@@ -40,8 +40,7 @@ The app supports **3 different AI providers** for reading screenshots:
 #### `services/vercel.ts` (Vercel Provider)
 -   Uses **Vercel AI Gateway** with **Claude Sonnet 4.5**
 -   **Best for**: Spatial reasoning and logical validation
--   **Endpoint**: `https://ai-gateway.vercel.sh/v1` (via Vite proxy)
--   Requires a proxy due to CORS restrictions
+-   **Endpoint**: `https://ai-gateway.vercel.sh/v1/chat/completions` (Direct call)
 
 #### `services/gemini.ts` (Google Gemini Provider)
 -   Uses **Google GenAI SDK** with **Gemini 3 Pro**
@@ -64,7 +63,6 @@ This file contains small, reusable tools:
 
 ### 7. `vite.config.ts` (The Setup)
 -   **Environment Variables**: Exposes API keys from `.env.local` as `process.env.*`
--   **Proxy Configuration**: Sets up a proxy for Vercel AI Gateway to bypass CORS restrictions
 -   **Build Settings**: Configures Vite for development and production
 
 ---

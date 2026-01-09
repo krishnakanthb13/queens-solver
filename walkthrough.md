@@ -23,7 +23,7 @@ The app supports **3 AI providers** for screenshot-to-puzzle extraction:
 | File | Provider | Model | API Endpoint |
 | :--- | :--- | :--- | :--- |
 | `aiml.ts` | AIML | Gemini 3 Pro | `api.aimlapi.com` |
-| `vercel.ts` | Vercel Gateway | Claude Sonnet 4.5 | `ai-gateway.vercel.sh` (via proxy) |
+| `vercel.ts` | Vercel Gateway | Claude Sonnet 4.5 | `ai-gateway.vercel.sh` |
 | `gemini.ts` | Google | Gemini 3 Pro | Google GenAI SDK |
 
 ### Switching Providers
@@ -40,7 +40,7 @@ VERCEL_API_KEY=your_key    # For Vercel provider
 GEMINI_API_KEY=your_key    # For Google Gemini provider
 ```
 
-The Vite config (`vite.config.ts`) exposes these as `process.env.*` and sets up a proxy for Vercel AI Gateway.
+The Vite config (`vite.config.ts`) exposes these as `process.env.*`.
 
 ---
 
