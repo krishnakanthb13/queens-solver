@@ -7,27 +7,17 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Build outputs
 dist
 dist-ssr
+build/
+out/
+
+# Environment variables (IMPORTANT: API keys)
 *.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Local history and cache
-.history
-.eslintcache
-
-# Environment variables
 .env
 .env.development
 .env.test
@@ -35,12 +25,42 @@ dist-ssr
 .env.local
 .env.*.local
 
-# Build outputs
-build/
-out/
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# Other
-coverage/
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local history and cache
+.history
+.eslintcache
 .cache/
 .npm/
+.parcel-cache/
+
+# Test coverage
+coverage/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Vite cache
+.vite/
+
+# Local data
 history.json
+
+# Temporary files
+*.tmp
+*.temp
+~$*
