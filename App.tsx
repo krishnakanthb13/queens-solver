@@ -122,30 +122,67 @@ const App: React.FC = () => {
     }
   };
 
-  const saveLogs = () => {
+  const saveLogs = async () => {
     if (history.length === 0) {
       alert("No history logs to save.");
       return;
     }
 
     const logContent = history.map(item => {
+      // Create visual grid for the solution
+      const grid = Array(item.gridSize).fill(null).map(() => Array(item.gridSize).fill('.'));
+      item.solution.forEach(pos => {
+        grid[pos.r][pos.c] = 'Q';
+      });
+      const solutionMatrix = grid.map(row => row.join(' ')).join('\n');
+
+      // Create visual grid for regions
+      const regionMatrix = item.regions.map(row =>
+        row.map(r => r.toString().padStart(2, ' ')).join(' ')
+      ).join('\n');
+
       return `Timestamp: ${new Date(item.timestamp).toLocaleString()}\n` +
-             `ID: ${item.id}\n` +
-             `Grid Size: ${item.gridSize}x${item.gridSize}\n` +
-             `Solve Duration: ${formatDuration(item.durationMs)}\n` +
-             `Solution Queens (row, col): ${item.solution.map(p => `(${p.r}, ${p.c})`).join(', ')}\n` +
-             `----------------------------------------`;
+        `ID: ${item.id}\n` +
+        `Grid Size: ${item.gridSize}x${item.gridSize}\n` +
+        `Solve Duration: ${formatDuration(item.durationMs)}\n` +
+        `\nSolution Queens (row, col):\n${item.solution.map(p => `(${p.r}, ${p.c})`).join(', ')}\n` +
+        `\nSolution Board:\n${solutionMatrix}\n` +
+        `\nRegion Map:\n${regionMatrix}\n` +
+        `\n----------------------------------------`;
     }).join('\n\n');
 
-    const blob = new Blob([logContent], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'queens_solver_logs.txt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    try {
+      // Attempt to use the File System Access API for "Save As" dialog
+      if ('showSaveFilePicker' in window) {
+        const handle = await (window as any).showSaveFilePicker({
+          suggestedName: 'queens_solver_logs.txt',
+          types: [{
+            description: 'Text Files',
+            accept: { 'text/plain': ['.txt'] },
+          }],
+        });
+        const writable = await handle.createWritable();
+        await writable.write(logContent);
+        await writable.close();
+      } else {
+        // Fallback: Standard download (might not prompt on all browsers)
+        const blob = new Blob([logContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'queens_solver_logs.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    } catch (err: any) {
+      // Ignore if user cancelled the picker
+      if (err.name !== 'AbortError') {
+        console.error('Failed to save logs:', err);
+        alert('Failed to save logs. Please try again.');
+      }
+    }
   };
 
   const loadHistoryItem = (item: HistoryItem) => {
