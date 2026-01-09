@@ -378,17 +378,13 @@ const App: React.FC = () => {
           puzzleData = await parsePuzzleFromImageVercel(
             apiKey,
             base64String,
-            file.type,
-            // "google/gemini-3-pro-preview"
-            "anthropic/claude-sonnet-4-5"
+            file.type
           );
         } else {
           puzzleData = await parsePuzzleFromImageAIML(
             apiKey,
             base64String,
-            file.type,
-            // "google/gemini-3-pro-preview"
-            "anthropic/claude-sonnet-4-5"
+            file.type
           );
         }
 
