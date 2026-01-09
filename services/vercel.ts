@@ -34,6 +34,7 @@ export const parsePuzzleFromImageVercel = async (
     apiKey: string,
     base64Image: string,
     mimeType: string,
+    // model: string = "google/gemini-3-pro-preview",  // Gemini 3 Pro for best grid extraction accuracy
     model: string = "anthropic/claude-sonnet-4.5",  // Claude Sonnet 4.5 for best spatial reasoning
     baseUrl?: string
 ): Promise<PuzzleData> => {
@@ -52,7 +53,7 @@ export const parsePuzzleFromImageVercel = async (
                 content: [
                     {
                         type: "text",
-                        text: "Analyze this Queens puzzle image. Think step-by-step to identify the grid size and then assign each cell to its corresponding colored region in the output JSON."
+                        text: "Analyze this Queens puzzle image. Output the JSON immediately after brief analysis. Do not over-explain - just count grid size, identify regions by color, and output the JSON."
                     },
                     {
                         type: "image_url",
@@ -63,13 +64,13 @@ export const parsePuzzleFromImageVercel = async (
                 ]
             }
         ],
-        max_tokens: 4096
+        max_tokens: 8192
     };
 
     try {
-        console.log("[Qwen] Making request to:", endpoint);
-        console.log("[Qwen] Model:", modelName);
-        console.log("[Qwen] Image size (base64 chars):", base64Image.length);
+        console.log("[Vercel] Making request to:", endpoint);
+        console.log("[Vercel] Model:", modelName);
+        console.log("[Vercel] Image size (base64 chars):", base64Image.length);
 
         const response = await fetch(endpoint, {
             method: "POST",
@@ -80,16 +81,16 @@ export const parsePuzzleFromImageVercel = async (
             body: JSON.stringify(requestBody)
         });
 
-        console.log("[Qwen] Response status:", response.status);
+        console.log("[Vercel] Response status:", response.status);
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error("[Qwen] Error response:", errorText);
+            console.error("[Vercel] Error response:", errorText);
             throw new Error(`API Error ${response.status}: ${errorText}`);
         }
 
         const result = await response.json();
-        console.log("[Qwen] Full response:", JSON.stringify(result, null, 2));
+        console.log("[Vercel] Full response:", JSON.stringify(result, null, 2));
 
         const message = result.choices?.[0]?.message;
 
@@ -98,7 +99,7 @@ export const parsePuzzleFromImageVercel = async (
 
         // For thinking models, content may be empty and reasoning contains the output
         if (!text && message?.reasoning) {
-            console.log("[Qwen] Using 'reasoning' field instead of 'content'");
+            console.log("[Vercel] Using 'reasoning' field instead of 'content'");
             text = message.reasoning;
         }
 
@@ -108,8 +109,8 @@ export const parsePuzzleFromImageVercel = async (
         }
 
         if (!text) {
-            console.error("[Qwen] No text found. Message structure:", message);
-            throw new Error("No response content from Qwen model.");
+            console.error("[Vercel] No text found. Message structure:", message);
+            throw new Error("No response content from Vercel model.");
         }
 
         const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -123,7 +124,7 @@ export const parsePuzzleFromImageVercel = async (
             const actualRows = data.regions.length;
 
             if (data.gridSize !== actualRows) {
-                console.warn(`Qwen returned gridSize=${data.gridSize} but regions array is ${actualRows} rows. Using ${actualRows}.`);
+                console.warn(`Vercel returned gridSize=${data.gridSize} but regions array is ${actualRows} rows. Using ${actualRows}.`);
                 data.gridSize = actualRows;
             }
 

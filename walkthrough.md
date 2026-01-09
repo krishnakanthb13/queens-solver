@@ -12,8 +12,8 @@ If you are new here, start by reading the [README.md](README.md) to set up the p
 -   **Game Board**: The visual grid logic is inside `components/Board.tsx`.
 -   **Solving Algorithm**: The core logic that finds solutions is in `services/solver.ts`.
 -   **AI Integration**: Vision-based grid detection is handled by multiple services:
-    -   `services/aiml.ts` - AIML API (Gemini 3 Pro)
-    -   `services/vercel.ts` - Vercel AI Gateway (Claude Sonnet 4.5)
+    -   `services/aiml.ts` - AIML API (Gemini 3 Pro / Claude Sonnet 4.5)
+    -   `services/vercel.ts` - Vercel AI Gateway (Gemini 3 Pro / Claude Sonnet 4.5)
     -   `services/gemini.ts` - Direct Google Gemini API
 
 ## 🤖 AI Providers
@@ -22,8 +22,8 @@ The app supports **3 AI providers** for screenshot-to-puzzle extraction:
 
 | File | Provider | Model | API Endpoint |
 | :--- | :--- | :--- | :--- |
-| `aiml.ts` | AIML | Gemini 3 Pro | `api.aimlapi.com` |
-| `vercel.ts` | Vercel Gateway | Claude Sonnet 4.5 | `ai-gateway.vercel.sh` |
+| `aiml.ts` | AIML | Gemini 3 Pro / Claude Sonnet 4.5 | `api.aimlapi.com` |
+| `vercel.ts` | Vercel Gateway | Gemini 3 Pro / Claude Sonnet 4.5 | `ai-gateway.vercel.sh` |
 | `gemini.ts` | Google | Gemini 3 Pro | Google GenAI SDK |
 
 ### Switching Providers

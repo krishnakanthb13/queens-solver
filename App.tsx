@@ -64,7 +64,7 @@ const App: React.FC = () => {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
 
-  const [visionModel, setVisionModel] = useState<'gemini' | 'claude' | 'aiml'>('aiml');
+  const [visionModel, setVisionModel] = useState<'gemini' | 'vercel' | 'aiml'>('aiml');
 
   // File upload ref
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -348,12 +348,12 @@ const App: React.FC = () => {
     if (visionModel === 'gemini') {
       apiKey = process.env.GEMINI_API_KEY;
       modelLabel = 'Gemini';
-    } else if (visionModel === 'claude') {
+    } else if (visionModel === 'vercel') {
       apiKey = process.env.VERCEL_API_KEY;
-      modelLabel = 'Claude (Vercel)';
+      modelLabel = 'Gemini/Claude (Vercel)';
     } else {
       apiKey = process.env.AIML_API_KEY;
-      modelLabel = 'Gemini (AIML)';
+      modelLabel = 'Gemini/Claude (AIML)';
     }
 
     if (!apiKey) {
@@ -374,19 +374,21 @@ const App: React.FC = () => {
             base64String,
             file.type
           );
-        } else if (visionModel === 'claude') {
+        } else if (visionModel === 'vercel') {
           puzzleData = await parsePuzzleFromImageVercel(
             apiKey,
             base64String,
             file.type,
-            "anthropic/claude-sonnet-4.5"
+            // "google/gemini-3-pro-preview"
+            "anthropic/claude-sonnet-4-5"
           );
         } else {
           puzzleData = await parsePuzzleFromImageAIML(
             apiKey,
             base64String,
             file.type,
-            "google/gemini-3-pro-preview"
+            // "google/gemini-3-pro-preview"
+            "anthropic/claude-sonnet-4-5"
           );
         }
 
@@ -659,10 +661,10 @@ const App: React.FC = () => {
                       <span className="block text-slate-700 dark:text-slate-200 font-medium">Upload Screenshot</span>
                       <span className="block text-slate-400 dark:text-slate-500 text-xs mt-1 flex items-center justify-center gap-1">
                         <Sparkles className={`w-3 h-3 ${visionModel === 'gemini' ? 'text-indigo-500' :
-                          visionModel === 'claude' ? 'text-orange-500' : 'text-emerald-500'
+                          visionModel === 'vercel' ? 'text-orange-500' : 'text-emerald-500'
                           }`} />
                         {visionModel === 'gemini' ? 'Gemini 3 Pro' :
-                          visionModel === 'claude' ? 'Claude (Vercel)' : 'Gemini (AIML)'} (Thinking)
+                          visionModel === 'vercel' ? 'Gemini/Claude (Vercel)' : 'Gemini/Claude (AIML)'} (Thinking)
                       </span>
                     </div>
                   </>
@@ -690,8 +692,8 @@ const App: React.FC = () => {
                   Gemini
                 </button>
                 <button
-                  onClick={() => setVisionModel('claude')}
-                  className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${visionModel === 'claude'
+                  onClick={() => setVisionModel('vercel')}
+                  className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${visionModel === 'vercel'
                     ? 'bg-white dark:bg-slate-700 text-orange-600 dark:text-orange-400 shadow-sm'
                     : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                     }`}

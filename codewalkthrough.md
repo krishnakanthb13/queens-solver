@@ -32,13 +32,13 @@ This is a specialized script that solves the puzzle using a technique called **B
 The app supports **3 different AI providers** for reading screenshots:
 
 #### `services/aiml.ts` (AIML Provider)
--   Uses **AIML API** with **Gemini 3 Pro** model
+-   Uses **AIML API** with **Gemini 3 Pro / Claude Sonnet 4.5** model
 -   **Best for**: Grid extraction accuracy
 -   **Endpoint**: `https://api.aimlapi.com/v1/chat/completions`
 -   **Default provider** in the app
 
 #### `services/vercel.ts` (Vercel Provider)
--   Uses **Vercel AI Gateway** with **Claude Sonnet 4.5**
+-   Uses **Vercel AI Gateway** with **Gemini 3 Pro / Claude Sonnet 4.5**
 -   **Best for**: Spatial reasoning and logical validation
 -   **Endpoint**: `https://ai-gateway.vercel.sh/v1/chat/completions` (Direct call)
 
@@ -72,10 +72,10 @@ This file contains small, reusable tools:
 Create a `.env.local` file with your API keys:
 
 ```env
-# AIML API (Default - Gemini 3 Pro)
+# AIML API (Default - Gemini 3 Pro / Claude Sonnet 4.5)
 AIML_API_KEY=your_key_here
 
-# Vercel AI Gateway (Claude Sonnet 4.5)
+# Vercel AI Gateway (Gemini 3 Pro / Claude Sonnet 4.5)
 VERCEL_API_KEY=your_key_here
 
 # Google Gemini (Direct API)

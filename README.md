@@ -11,8 +11,8 @@ An interactive web application designed to solve the daily **LinkedIn Queens** p
 -   **Manual Play**: Test your logic skills by solving puzzles yourself.
 -   **Auto-Solver**: Uses a powerful backtracking algorithm to find solutions in microseconds.
 -   **Multi-Provider AI Vision**: Choose from **3 AI providers** to extract puzzles from screenshots:
-    -   **AIML** (Gemini 3 Pro) - Best grid extraction accuracy
-    -   **Vercel AI Gateway** (Claude Sonnet 4.5) - Excellent spatial reasoning
+    -   **AIML** (Gemini 3 Pro / Claude Sonnet 4.5) - Best grid extraction accuracy
+    -   **Vercel AI Gateway** (Gemini 3 Pro / Claude Sonnet 4.5) - Excellent spatial reasoning
     -   **Google Gemini** (Gemini 3 Pro) - Direct Google API integration
 -   **Edit Mode**: Create and test your own custom board layouts.
 -   **Solve History**: Keep track of your solved puzzles and durations.
@@ -45,10 +45,10 @@ An interactive web application designed to solve the daily **LinkedIn Queens** p
 3.  **Configure Environment**:
     Create a `.env.local` file in the root directory and add your API keys:
     ```env
-    # AIML API (Recommended - uses Gemini 3 Pro)
+    # AIML API (Recommended - uses Gemini 3 Pro / Claude Sonnet 4.5)
     AIML_API_KEY=your_aiml_api_key_here
 
-    # Vercel AI Gateway (uses Claude Sonnet 4.5)
+    # Vercel AI Gateway (uses Gemini 3 Pro / Claude Sonnet 4.5)
     VERCEL_API_KEY=your_vercel_api_key_here
 
     # Google Gemini (Direct API)
@@ -65,8 +65,8 @@ An interactive web application designed to solve the daily **LinkedIn Queens** p
 
 | Provider | Model | Strengths |
 | :--- | :--- | :--- |
-| **AIML** | Gemini 3 Pro | Best grid extraction, fast |
-| **Vercel** | Claude Sonnet 4.5 | Excellent spatial reasoning |
+| **AIML** | Gemini 3 Pro / Claude Sonnet 4.5 | Best grid extraction, fast |
+| **Vercel** | Gemini 3 Pro / Claude Sonnet 4.5 | Excellent spatial reasoning |
 | **Gemini** | Gemini 3 Pro | Direct Google API |
 
 > **Tip**: AIML is set as the default provider. You can switch between providers using the toggle buttons in the UI.
