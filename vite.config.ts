@@ -8,14 +8,6 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       host: '0.0.0.0',
-      proxy: {
-        '/api/qwen': {
-          target: 'https://ai-gateway.vercel.sh/v1/chat/completions',
-          changeOrigin: true,
-          rewrite: () => '',
-          secure: true,
-        },
-      },
     },
     plugins: [react()],
     define: {

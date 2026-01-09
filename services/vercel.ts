@@ -38,7 +38,7 @@ export const parsePuzzleFromImageVercel = async (
     baseUrl?: string
 ): Promise<PuzzleData> => {
     const modelName = process.env.VERCEL_MODEL || model;
-    const endpoint = baseUrl || "/api/qwen";
+    const endpoint = baseUrl || "https://ai-gateway.vercel.sh/v1/chat/completions";
 
     const requestBody = {
         model: modelName,
