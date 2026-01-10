@@ -37,7 +37,7 @@ export const parsePuzzleFromImageAIML = async (
     base64Image: string,
     mimeType: string,
     // model: string = "google/gemini-3-pro-preview",  // Gemini 3 Pro for best grid extraction accuracy
-    model: string = "anthropic/claude-sonnet-4-5",  // Claude Sonnet 4.5 for best spatial reasoning
+    model: string = "claude-sonnet-4-5",  // Claude Sonnet 4.5 for best spatial reasoning
     baseUrl?: string
 ): Promise<PuzzleData> => {
     const modelName = process.env.AIML_MODEL || model;
