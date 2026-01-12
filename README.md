@@ -10,6 +10,7 @@ An interactive web application designed to solve the daily **LinkedIn Queens** p
 
 -   **Manual Play**: Test your logic skills by solving puzzles yourself.
 -   **Auto-Solver**: Uses a powerful backtracking algorithm to find solutions in microseconds.
+-   **Random Level Generator**: Generate infinite valid boards with adjustable difficulty (Easy, Medium, Hard) and sizes from 5x5 to 10x10.
 -   **Multi-Provider AI Vision**: Choose from **3 AI providers** to extract puzzles from screenshots:
     -   **AIML** (Gemini 3 Pro / Claude Sonnet 4.5) - Best grid extraction accuracy
     -   **Vercel AI Gateway** (Gemini 3 Pro / Claude Sonnet 4.5) - Excellent spatial reasoning
@@ -18,6 +19,7 @@ An interactive web application designed to solve the daily **LinkedIn Queens** p
 -   **Solve History**: Keep track of your solved puzzles and durations.
 -   **Save Logs**: Export your solve history to a text file for your records.
 -   **Dark Mode**: A sleek, premium interface that's easy on the eyes.
+-   **Visuals**: Custom SVG favicon for a polished browser experience.
 
 ## 🚀 Getting Started
 
@@ -74,7 +76,7 @@ An interactive web application designed to solve the daily **LinkedIn Queens** p
 ## 📖 Documentation
 
 -   **[Project Walkthrough](walkthrough.md)**: Overview of the project structure and navigation.
--   **[Code Walkthrough](codewalkthrough.md)**: A simple technical guide explaining how each file works.
+-   **[Code Walkthrough](codewalkthrough.md)**: A detailed technical guide explaining how each file works, including the random generator logic.
 
 ## ⚖️ License
 

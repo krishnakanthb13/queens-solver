@@ -15,6 +15,7 @@ This is the main file of the application. It's like the "manager" that:
 -   **Connects the Dots**: It sends instructions to the **Solver** to find answers and to the **AI Services** to read images.
 -   **Manages AI Selection**: Lets users choose between AIML, Vercel, or Gemini for screenshot analysis.
 -   **Manages Time**: It measures how fast the solver finds a solution.
+-   **Random Level Handling**: Orchestrates the generator modal and updates the board with internally generated puzzles.
 
 ### 2. `components/Board.tsx` (The Face)
 This component is responsible for drawing the grid on your screen.
@@ -27,7 +28,16 @@ This is a specialized script that solves the puzzle using a technique called **B
 -   **How it works**: It tries placing a Queen in a row, then moves to the next row. If it hits a dead end (a rule is broken), it "backtracks" (undoes the last move) and tries a different spot.
 -   It keeps going until it find a valid position for every single Queen.
 
-### 4. AI Services (The Eyes)
+### 4. `services/generator.ts` (The Creative Genius)
+This service creates NEW puzzles from scratch using an "Inside-Out" approach:
+-   **Queen Placement**: It first creates a valid "skeleton" of Queens using randomized backtracking. By shuffling the column order at each step, it ensures that every board is unique.
+-   **Region Growth**: Once the Queens are placed, it grows colored regions around them using a frontier-based algorithm.
+-   **Difficulty Control**:
+    -   **Easy**: Biases growth towards the "oldest" points, resulting in simple, compact shapes.
+    -   **Medium**: A balanced mix of patterns.
+    -   **Hard**: Uses fully random growth to create complex, winding, "snakelike" regions that are much trickier to solve.
+
+### 5. AI Services (The Eyes)
 
 The app supports **3 different AI providers** for reading screenshots:
 
@@ -52,18 +62,28 @@ All three services share the same logic:
 -   **Auto-Correction**: Clean up AI responses to ensure the grid is a perfect square and regions are valid
 -   **JSON Extraction**: Parse the structured output from the AI response
 
-### 5. `utils.ts` (The Helper)
+### 6. `utils.ts` (The Helper)
 This file contains small, reusable tools:
 -   **Move Validator**: Checks if placing a Queen breaks any rules (same row, same column, same region, or touching another Queen).
 -   **Error Checker**: Scans the whole board to find any conflicts you've made while playing.
 
-### 6. `types.ts` & `constants.ts` (The Dictionary)
+### 7. `types.ts` & `constants.ts` (The Dictionary)
 -   **types.ts**: Defines the names and shapes of data (like what a `GridState` or `CellState` looks like). It helps catch bugs while writing code.
 -   **constants.ts**: Stores fixed information like the colors used for the regions and the layout of sample puzzles.
 
-### 7. `vite.config.ts` (The Setup)
+### 8. `vite.config.ts` (The Setup)
 -   **Environment Variables**: Exposes API keys from `.env.local` as `process.env.*`
 -   **Build Settings**: Configures Vite for development and production
+
+---
+
+## 🎲 Why the Random Generator?
+
+Before the generator was added, the app was a "tool" for solving external puzzles. By adding the `generator.ts` logic, it became a **standalone game**. 
+
+-   **Goal**: Provide infinite replayability without needing external screenshots.
+-   **Guaranteed Solvable**: Because the algorithm places Queens *first* and then wraps regions around them, every puzzle generated is mathematically guaranteed to have at least one solution.
+-   **Visual Polish**: We also added a custom **SVG Favicon** (the golden crown) to make the experience feel premium.
 
 ---
 
