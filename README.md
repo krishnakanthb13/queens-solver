@@ -1,5 +1,8 @@
 # 👑 Queens Solver
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+
 <div align="center">
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
@@ -37,7 +40,7 @@ An interactive web application designed to solve the daily **LinkedIn Queens** p
 
 1.  **Clone the repository**:
     ```bash
-    git clone https://github.com/your-username/queens-solver.git
+    git clone https://github.com/krishnakanthb13/queens-solver.git
     cd queens-solver
     ```
 
@@ -77,8 +80,10 @@ An interactive web application designed to solve the daily **LinkedIn Queens** p
 
 ## 📖 Documentation
 
--   **[Project Walkthrough](walkthrough.md)**: Overview of the project structure and navigation.
--   **[Code Walkthrough](codewalkthrough.md)**: A detailed technical guide explaining how each file works, including the random generator logic.
+-   **[Design Philosophy](DESIGN_PHILOSOPHY.md)**: The rationale behind the project, solving strategy, and user experience goals.
+-   **[Code Documentation](CODE_DOCUMENTATION.md)**: A detailed technical guide explaining the architecture, core methods, and data flow.
+-   **[Contributing Guide](CONTRIBUTING.md)**: Instructions for reporting bugs, suggesting features, and submitting pull requests.
+
 
 ## ⚖️ License
 

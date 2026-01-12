@@ -59,6 +59,7 @@ coverage/
 
 # Local data
 history.json
+queens_solver_logs.txt
 
 # Temporary files
 *.tmp
