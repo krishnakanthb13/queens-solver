@@ -642,30 +642,38 @@ const App: React.FC = () => {
 
             {/* Tool Actions (Hint & Brush) */}
             <div className="mt-4 flex gap-3">
-              {mode === AppMode.EDIT_REGIONS && (
-                <button
-                  onClick={handleBrushClick}
-                  style={isBrushActive && brushSource !== null ? { backgroundColor: REGION_COLORS[brushSource as number] } : {}}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-lg font-medium transition-all shadow-sm border active:scale-[0.98] ${getBrushButtonStyle()}`}
-                  title="Paint Brush: Click to pick a cell color, then click other cells to paint."
-                >
-                  <Brush className={`w-5 h-5 ${isBrushActive && brushSource === null ? 'animate-bounce' : ''}`} />
-                  <span className="border-none bg-transparent whitespace-nowrap">
-                    {isBrushActive
-                      ? (brushSource === null ? "Pick Color" : "Painting")
-                      : "Paint Brush"}
-                  </span>
-                </button>
-              )}
+              {(() => {
+                const isSolved = cells.flat().filter(c => c === CellState.QUEEN).length === gridSize && errors.size === 0;
+                return (
+                  <>
+                    {mode === AppMode.EDIT_REGIONS && (
+                      <button
+                        onClick={handleBrushClick}
+                        disabled={isSolved}
+                        style={isBrushActive && brushSource !== null ? { backgroundColor: REGION_COLORS[brushSource as number] } : {}}
+                        className={`flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-lg font-medium transition-all shadow-sm border active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 ${getBrushButtonStyle()}`}
+                        title="Paint Brush: Click to pick a cell color, then click other cells to paint."
+                      >
+                        <Brush className={`w-5 h-5 ${isBrushActive && brushSource === null ? 'animate-bounce' : ''}`} />
+                        <span className="border-none bg-transparent whitespace-nowrap">
+                          {isBrushActive
+                            ? (brushSource === null ? "Pick Color" : "Painting")
+                            : "Paint Brush"}
+                        </span>
+                      </button>
+                    )}
 
-              <button
-                onClick={handleHint}
-                disabled={mode === AppMode.EDIT_REGIONS || (cells.flat().filter(c => c === CellState.QUEEN).length === gridSize && errors.size === 0)}
-                className={`flex-1 flex items-center justify-center gap-2 bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-200 py-3 px-4 rounded-lg font-medium transition-colors border border-amber-200 dark:border-amber-800/50 shadow-sm active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 ${mode !== AppMode.EDIT_REGIONS ? 'w-full' : ''}`}
-              >
-                <HelpCircle className="w-5 h-5" />
-                Hint
-              </button>
+                    <button
+                      onClick={handleHint}
+                      disabled={mode === AppMode.EDIT_REGIONS || isSolved}
+                      className={`flex-1 flex items-center justify-center gap-2 bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-200 py-3 px-4 rounded-lg font-medium transition-colors border border-amber-200 dark:border-amber-800/50 shadow-sm active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 ${mode !== AppMode.EDIT_REGIONS ? 'w-full' : ''}`}
+                    >
+                      <HelpCircle className="w-5 h-5" />
+                      Hint
+                    </button>
+                  </>
+                );
+              })()}
             </div>
 
 
