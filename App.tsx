@@ -145,6 +145,16 @@ const App: React.FC = () => {
     return () => { document.body.style.overflow = 'unset'; };
   }, [showHistoryModal]);
 
+  // Scroll Lock for Generator Modal
+  useEffect(() => {
+    if (showGeneratorModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [showGeneratorModal]);
+
   const saveToHistory = (durationMs: number, solutionQueens: { r: number, c: number }[]) => {
     const newItem: HistoryItem = {
       id: crypto.randomUUID(),
@@ -489,7 +499,6 @@ const App: React.FC = () => {
       }
     };
     reader.readAsDataURL(file);
-    reader.readAsDataURL(file);
   };
 
   const handleGenerateBoard = () => {
@@ -536,7 +545,6 @@ const App: React.FC = () => {
 
     // Active with source (Region color)
     return baseStyle + `border-slate-300 ring-2 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 brightness-110`;
-    return baseStyle;
   };
 
   return (
