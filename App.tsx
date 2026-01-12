@@ -46,7 +46,8 @@ import {
   Eye,
   Sparkles,
   Download,
-  Dices
+  Dices,
+  Brush
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -57,9 +58,14 @@ const App: React.FC = () => {
   const [mode, setMode] = useState<AppMode>(AppMode.PLAY);
   const [selectedColorId, setSelectedColorId] = useState<number>(0);
   const [errors, setErrors] = useState<Set<string>>(new Set());
+  const [isBoardSolvable, setIsBoardSolvable] = useState<boolean>(true);
   const [isSolving, setIsSolving] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Paint Brush State
+  const [isBrushActive, setIsBrushActive] = useState(false);
+  const [brushSource, setBrushSource] = useState<number | CellState | null>(null);
 
   // New State for Timer and History
   const [lastSolveDuration, setLastSolveDuration] = useState<number | null>(null);
@@ -106,6 +112,27 @@ const App: React.FC = () => {
       setErrors(new Set());
     }
   }, [cells, regions, gridSize, mode]);
+
+  // Check board solvability when entering Play Mode or Regions change
+  useEffect(() => {
+    if (mode === AppMode.PLAY) {
+      // Use efficient solver check
+      // We wrap in timeout to avoid blocking main thread immediately on render if expensive
+      const timer = setTimeout(() => {
+        const solution = solvePuzzle(gridSize, regions);
+        setIsBoardSolvable(!!solution);
+      }, 10);
+      return () => clearTimeout(timer);
+    } else {
+      setIsBoardSolvable(true); // Reset state when editing
+    }
+  }, [gridSize, regions, mode]);
+
+  // Reset brush interaction when mode changes
+  useEffect(() => {
+    setIsBrushActive(false);
+    setBrushSource(null);
+  }, [mode, gridSize]);
 
   const saveToHistory = (durationMs: number, solutionQueens: { r: number, c: number }[]) => {
     const newItem: HistoryItem = {
@@ -224,6 +251,20 @@ const App: React.FC = () => {
   };
 
   const handleCellClick = (r: number, c: number) => {
+    // Paint Brush Logic (Edit Regions Only)
+    if (isBrushActive && mode === AppMode.EDIT_REGIONS) {
+      if (brushSource === null) {
+        // Pick Source
+        setBrushSource(regions[r][c]);
+      } else {
+        // Paint Target
+        const newRegions = regions.map(row => [...row]);
+        newRegions[r][c] = brushSource as number;
+        setRegions(newRegions);
+      }
+      return;
+    }
+
     if (mode === AppMode.EDIT_REGIONS) {
       const newRegions = regions.map(row => [...row]);
       newRegions[r][c] = selectedColorId;
@@ -448,6 +489,37 @@ const App: React.FC = () => {
     }
   };
 
+  const handleBrushClick = () => {
+    if (isBrushActive) {
+      // Toggle off or reset selection
+      if (brushSource !== null) {
+        setBrushSource(null);
+      } else {
+        setIsBrushActive(false);
+      }
+    } else {
+      setIsBrushActive(true);
+      setBrushSource(null);
+    }
+  };
+
+  // Helper to get button style for brush
+  const getBrushButtonStyle = () => {
+    const baseStyle = "flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all shadow-sm border ";
+
+    if (!isBrushActive) {
+      return baseStyle + "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700";
+    }
+
+    if (brushSource === null) {
+      return baseStyle + "bg-black text-white border-black hover:bg-slate-900 animate-pulse ring-2 ring-offset-2 ring-black dark:ring-slate-500";
+    }
+
+    // Active with source (Region color)
+    return baseStyle + `border-slate-300 ring-2 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 brightness-110`;
+    return baseStyle;
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center py-8 px-4 font-sans transition-colors duration-200 relative">
 
@@ -532,6 +604,20 @@ const App: React.FC = () => {
               >
                 <RotateCcw className="w-5 h-5" /> Reset
               </button>
+
+              {mode === AppMode.EDIT_REGIONS && (
+                <button
+                  onClick={handleBrushClick}
+                  style={isBrushActive && brushSource !== null ? { backgroundColor: REGION_COLORS[brushSource as number] } : {}}
+                  className={`col-span-2 ${getBrushButtonStyle()}`}
+                  title="Paint Brush: Click to pick a cell color, then click other cells to paint."
+                >
+                  <Brush className={`w-5 h-5 ${isBrushActive && brushSource === null ? 'animate-bounce' : ''}`} />
+                  {isBrushActive
+                    ? (brushSource === null ? "Pick a Local Color..." : "Painting...")
+                    : "Paint Brush"}
+                </button>
+              )}
             </div>
 
             {/* Simple Timer Display */}
@@ -548,6 +634,10 @@ const App: React.FC = () => {
               {errors.size > 0 ? (
                 <span className="text-red-600 dark:text-red-400 font-medium flex items-center justify-center gap-2 animate-pulse">
                   <Info className="w-4 h-4" /> {errors.size} conflicts detected!
+                </span>
+              ) : !isBoardSolvable ? (
+                <span className="text-orange-600 dark:text-orange-400 font-medium flex items-center justify-center gap-2">
+                  <Info className="w-4 h-4" /> Board Layout is Unsolvable
                 </span>
               ) : (
                 <span className="text-emerald-600 dark:text-emerald-400 font-medium flex items-center justify-center gap-2">
@@ -630,7 +720,12 @@ const App: React.FC = () => {
                   {REGION_COLORS.slice(0, numRegions).map((color, idx) => (
                     <button
                       key={idx}
-                      onClick={() => setSelectedColorId(idx)}
+                      onClick={() => {
+                        setSelectedColorId(idx);
+                        if (isBrushActive) {
+                          setBrushSource(idx); // Also update brush if active
+                        }
+                      }}
                       className={`w-8 h-8 rounded-full border-2 transition-transform hover:scale-110 ${selectedColorId === idx ? 'border-slate-800 dark:border-white scale-110 shadow-md' : 'border-transparent'
                         }`}
                       style={{ backgroundColor: color }}
@@ -851,7 +946,7 @@ const App: React.FC = () => {
                   onChange={(e) => setGenSize(parseInt(e.target.value))}
                   className="block w-full rounded-lg border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 py-2.5 px-3 focus:ring-2 focus:ring-fuchsia-500 focus:outline-none transition-shadow"
                 >
-                  {[5, 6, 7, 8, 9, 10].map(size => (
+                  {[5, 6, 7, 8, 9, 10, 11, 12].map(size => (
                     <option key={size} value={size}>{size}x{size}</option>
                   ))}
                 </select>

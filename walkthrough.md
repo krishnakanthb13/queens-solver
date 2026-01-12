@@ -38,6 +38,12 @@ The application maintains a local history of your solved puzzles. You can access
 -   **Save Logs**: Download your complete solve history as `queens_solver_logs.txt`.
 -   **Clear History**: Permanently delete all logs.
 
+## 🎨 Design & Usability
+
+-   **Paint Brush Tool**: Designed for power users who want to build custom boards quickly. Instead of selecting a color from the palette for every click, you can "pick" a color from an existing cell and "paint" it across the grid.
+-   **Layout Intelligence**: The app doesn't just check for mistakes; it checks for possibility. When you finish editing a board, the app background-solves it to ensure you haven't created an impossible layout.
+-   **Scalability**: The random generator now supports up to 12x12 grids, providing a significant step up in difficulty for veteran players.
+
 ## 🔧 Configuration
 
 Environment variables are configured in `.env.local`:

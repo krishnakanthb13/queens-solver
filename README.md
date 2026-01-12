@@ -10,7 +10,9 @@ An interactive web application designed to solve the daily **LinkedIn Queens** p
 
 -   **Manual Play**: Test your logic skills by solving puzzles yourself.
 -   **Auto-Solver**: Uses a powerful backtracking algorithm to find solutions in microseconds.
--   **Random Level Generator**: Generate infinite valid boards with adjustable difficulty (Easy, Medium, Hard) and sizes from 5x5 to 10x10.
+-   **Random Level Generator**: Generate infinite valid boards with adjustable difficulty (Easy, Medium, Hard) and sizes from 5x5 to 12x12.
+-   **Paint Brush Tool**: Quickly create custom layouts by picking and painting region colors in Edit Mode.
+-   **Smart Layout Validation**: Automatically detects if a board configuration is mathematically solvable as you switch to Play Mode.
 -   **Multi-Provider AI Vision**: Choose from **3 AI providers** to extract puzzles from screenshots:
     -   **AIML** (Gemini 3 Pro / Claude Sonnet 4.5) - Best grid extraction accuracy
     -   **Vercel AI Gateway** (Gemini 3 Pro / Claude Sonnet 4.5) - Excellent spatial reasoning
