@@ -18,8 +18,8 @@ An interactive web application designed to solve the daily **LinkedIn Queens** p
     -   **Vercel AI Gateway** (Gemini 3 Pro / Claude Sonnet 4.5) - Excellent spatial reasoning
     -   **Google Gemini** (Gemini 3 Pro) - Direct Google API integration
 -   **Edit Mode**: Create and test your own custom board layouts.
--   **Solve History**: Keep track of your solved puzzles and durations.
--   **Save Logs**: Export your solve history to a text file for your records.
+-   **Solved History Logs**: Keep track of your solved puzzles with precise microsecond timing. Manage your history by viewing past solutions or deleting specific entries (⛔).
+-   **Save Logs**: Export your Solved History Logs to a text file for your records.
 -   **Dark Mode**: A sleek, premium interface that's easy on the eyes.
 -   **Visuals**: Custom SVG favicon for a polished browser experience.
 

@@ -14,7 +14,9 @@ This is the main file of the application. It's like the "manager" that:
 -   **Handles Clicks**: When you click a cell to place a Queen or a Cross, this file decides what happens.
 -   **Connects the Dots**: It sends instructions to the **Solver** to find answers and to the **AI Services** to read images.
 -   **Manages AI Selection**: Lets users choose between AIML, Vercel, or Gemini for screenshot analysis.
--   **Manages Time & History**: It measures how fast the solver finds a solution and saves valid solves to local storage.
+-   **Manages Time & History**: It measures how fast the solver finds a solution and saves valid solves to local storage in "Solved History Logs".
+-   **Reverse Chronological Sorting**: Implements logic to ensure the newest solve is always displayed first.
+-   **Individual Deletion**: Provides a `deleteHistoryEntry` function to remove specific records from the history list.
 -   **Random Level Handling**: Orchestrates the generator modal and updates the board with internally generated puzzles (supporting up to 12x12 grids).
 -   **Paint Brush State**: Implements a "Pick and Paint" state machine in Edit Mode that allows copying region colors quickly.
 -   **Smart Layout Validation**: Uses a background check to provide real-time feedback on whether a custom board layout is mathematically solvable.

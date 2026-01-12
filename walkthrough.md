@@ -34,8 +34,10 @@ Users can switch between providers using the toggle buttons in the UI. The defau
 
 The application maintains a local history of your solved puzzles. You can access this via the **History** button in the top-right corner.
 
--   **View History**: Replay previous puzzles.
--   **Save Logs**: Download your complete solve history as `queens_solver_logs.txt`.
+-   **View History**: Replay previous puzzles from the "Solved History Logs" modal.
+-   **Individual Deletion**: Remove specific entries from your history using the ⛔ button.
+-   **Reverse Chronological Order**: Your history is automatically sorted to show your newest solves at the top.
+-   **Save Logs**: Download your complete Solved History Logs as `queens_solver_logs.txt`.
 -   **Clear History**: Permanently delete all logs.
 
 ## 🎨 Design & Usability

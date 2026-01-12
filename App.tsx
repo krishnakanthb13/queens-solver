@@ -47,7 +47,8 @@ import {
   Sparkles,
   Download,
   Dices,
-  Brush
+  Brush,
+  CircleX
 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -72,7 +73,7 @@ const App: React.FC = () => {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
 
-  const [visionModel, setVisionModel] = useState<'gemini' | 'vercel' | 'aiml'>('aiml');
+  const [visionModel, setVisionModel] = useState<'gemini' | 'vercel' | 'aiml'>('vercel');
 
   // Generator State
   const [showGeneratorModal, setShowGeneratorModal] = useState(false);
@@ -134,6 +135,16 @@ const App: React.FC = () => {
     setBrushSource(null);
   }, [mode, gridSize]);
 
+  // Scroll Lock for History Modal
+  useEffect(() => {
+    if (showHistoryModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [showHistoryModal]);
+
   const saveToHistory = (durationMs: number, solutionQueens: { r: number, c: number }[]) => {
     const newItem: HistoryItem = {
       id: crypto.randomUUID(),
@@ -143,7 +154,6 @@ const App: React.FC = () => {
       regions: JSON.parse(JSON.stringify(regions)), // Deep copy
       solution: solutionQueens
     };
-
     const newHistory = [newItem, ...history].slice(0, 50); // Keep last 50
     setHistory(newHistory);
     localStorage.setItem('queens-solver-history', JSON.stringify(newHistory));
@@ -153,6 +163,15 @@ const App: React.FC = () => {
     if (window.confirm("Are you sure you want to delete all history logs? This cannot be undone.")) {
       setHistory([]);
       localStorage.removeItem('queens-solver-history');
+    }
+  };
+
+  const deleteHistoryEntry = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm("Delete this entry?")) {
+      const newHistory = history.filter(item => item.id !== id);
+      setHistory(newHistory);
+      localStorage.setItem('queens-solver-history', JSON.stringify(newHistory));
     }
   };
 
@@ -542,7 +561,7 @@ const App: React.FC = () => {
       </div>
 
       {/* Header */}
-      <header className="mb-8 text-center max-w-2xl w-full relative">
+      <header className="relative backdrop-blur-md bg-white/30 dark:bg-slate-900/30 border border-white/20 dark:border-white/10 shadow-xl rounded-2xl p-6 mb-6 text-center max-w-2xl w-full mx-auto">
         <div className="flex flex-col items-center">
           <div className="flex items-center gap-3 mb-3">
             <Crown className="text-amber-500 fill-current w-10 h-10" />
@@ -551,15 +570,24 @@ const App: React.FC = () => {
             </h1>
           </div>
           <p className="text-slate-600 dark:text-slate-400 text-lg">
-            Solve the daily LinkedIn Queens puzzle. Upload a screenshot to auto-detect the layout.
+            Solve the daily LinkedIn Queens puzzle.
           </p>
         </div>
       </header>
 
-      <div className="flex flex-col lg:flex-row gap-8 w-full max-w-6xl justify-center items-start">
+      <div className="flex flex-col lg:flex-row gap-4 w-full max-w-6xl justify-center items-start">
 
         {/* Left Column: Board */}
-        <div className="flex-1 w-full flex justify-center max-w-[600px] mx-auto lg:mx-0">
+        <div className="flex-1 w-full flex flex-col items-center max-w-[500px] mx-auto lg:mx-0">
+          {lastSolveDuration !== null && (
+            <div className="w-full mb-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 px-4 py-2 rounded-lg flex items-center justify-center gap-2 animate-in fade-in text-sm">
+              <CheckCircle className="w-4 h-4 shrink-0" />
+              <p>
+                <span className="font-semibold">Solved</span> in {formatDuration(lastSolveDuration)}
+              </p>
+            </div>
+          )}
+
           <Board
             gridSize={gridSize}
             regions={regions}
@@ -573,7 +601,7 @@ const App: React.FC = () => {
         </div>
 
         {/* Right Column: Controls */}
-        <div className="w-full lg:w-96 flex flex-col gap-6">
+        <div className="w-full max-w-[500px] lg:max-w-none lg:w-96 flex flex-col gap-4 mx-auto lg:mx-0">
 
           {/* Game Controls Card */}
           <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 transition-colors duration-200">
@@ -583,64 +611,77 @@ const App: React.FC = () => {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={handleSolve}
-                disabled={isSolving || mode === AppMode.EDIT_REGIONS}
-                className="col-span-2 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-400 text-white py-3 px-4 rounded-lg font-medium transition-all shadow-sm hover:shadow active:scale-[0.98]"
+                disabled={isSolving || mode === AppMode.EDIT_REGIONS || (cells.flat().filter(c => c === CellState.QUEEN).length === gridSize && errors.size === 0)}
+                className={`col-span-2 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-medium transition-all shadow-sm active:scale-[0.98]
+                  ${(cells.flat().filter(c => c === CellState.QUEEN).length === gridSize && errors.size === 0)
+                    ? 'bg-emerald-600 text-white cursor-default'
+                    : 'bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-400 text-white hover:shadow'
+                  }`}
               >
-                {isSolving ? <Loader2 className="animate-spin w-5 h-5" /> : <Wand2 className="w-5 h-5" />}
-                {isSolving ? 'Solving...' : 'Auto Solve'}
+                {(cells.flat().filter(c => c === CellState.QUEEN).length === gridSize && errors.size === 0)
+                  ? <><CheckCircle className="w-5 h-5" /> Solved</>
+                  : <>{isSolving ? <Loader2 className="animate-spin w-5 h-5" /> : <Wand2 className="w-5 h-5" />} {isSolving ? 'Solving...' : 'Auto Solve'}</>
+                }
               </button>
 
               <button
-                onClick={handleHint}
-                disabled={mode === AppMode.EDIT_REGIONS}
-                className="flex items-center justify-center gap-2 bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-200 py-3 px-4 rounded-lg font-medium transition-colors border border-amber-200 dark:border-amber-800/50"
+                onClick={() => setShowGeneratorModal(true)}
+                className="flex items-center justify-center gap-2 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/40 dark:hover:bg-purple-900/60 text-purple-800 dark:text-purple-200 py-3 px-4 rounded-lg font-medium transition-colors border border-purple-200 dark:border-purple-800/50 active:scale-[0.98]"
               >
-                <HelpCircle className="w-5 h-5" /> Hint
+                <Sparkles className="w-5 h-5" /> New
               </button>
 
               <button
                 onClick={resetGame}
-                className="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 py-3 px-4 rounded-lg font-medium transition-colors border border-slate-200 dark:border-slate-700"
+                className="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 py-3 px-4 rounded-lg font-medium transition-colors border border-slate-200 dark:border-slate-700 active:scale-[0.98]"
               >
                 <RotateCcw className="w-5 h-5" /> Reset
               </button>
 
+            </div>
+
+            {/* Tool Actions (Hint & Brush) */}
+            <div className="mt-4 flex gap-3">
               {mode === AppMode.EDIT_REGIONS && (
                 <button
                   onClick={handleBrushClick}
                   style={isBrushActive && brushSource !== null ? { backgroundColor: REGION_COLORS[brushSource as number] } : {}}
-                  className={`col-span-2 ${getBrushButtonStyle()}`}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 px-3 rounded-lg font-medium transition-all shadow-sm border active:scale-[0.98] ${getBrushButtonStyle()}`}
                   title="Paint Brush: Click to pick a cell color, then click other cells to paint."
                 >
                   <Brush className={`w-5 h-5 ${isBrushActive && brushSource === null ? 'animate-bounce' : ''}`} />
-                  {isBrushActive
-                    ? (brushSource === null ? "Pick a Local Color..." : "Painting...")
-                    : "Paint Brush"}
+                  <span className="border-none bg-transparent whitespace-nowrap">
+                    {isBrushActive
+                      ? (brushSource === null ? "Pick Color" : "Painting")
+                      : "Paint Brush"}
+                  </span>
                 </button>
               )}
+
+              <button
+                onClick={handleHint}
+                disabled={mode === AppMode.EDIT_REGIONS || (cells.flat().filter(c => c === CellState.QUEEN).length === gridSize && errors.size === 0)}
+                className={`flex-1 flex items-center justify-center gap-2 bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/40 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-200 py-3 px-4 rounded-lg font-medium transition-colors border border-amber-200 dark:border-amber-800/50 shadow-sm active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 ${mode !== AppMode.EDIT_REGIONS ? 'w-full' : ''}`}
+              >
+                <HelpCircle className="w-5 h-5" />
+                Hint
+              </button>
             </div>
 
-            {/* Simple Timer Display */}
-            {lastSolveDuration !== null && (
-              <div className="mt-4 text-center animate-in fade-in slide-in-from-top-2">
-                <p className="text-indigo-600 dark:text-indigo-400 font-mono text-sm font-medium">
-                  Solved in: <span className="font-bold">{formatDuration(lastSolveDuration)}</span>
-                </p>
-              </div>
-            )}
+
 
             {/* Status Display */}
-            <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
+            <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-center">
               {errors.size > 0 ? (
-                <span className="text-red-600 dark:text-red-400 font-medium flex items-center justify-center gap-2 animate-pulse">
+                <span className="text-red-600 dark:text-red-400 text-sm font-medium flex items-center justify-center gap-2 animate-pulse">
                   <Info className="w-4 h-4" /> {errors.size} conflicts detected!
                 </span>
               ) : !isBoardSolvable ? (
-                <span className="text-orange-600 dark:text-orange-400 font-medium flex items-center justify-center gap-2">
+                <span className="text-orange-600 dark:text-orange-400 text-sm font-medium flex items-center justify-center gap-2">
                   <Info className="w-4 h-4" /> Board Layout is Unsolvable
                 </span>
               ) : (
-                <span className="text-emerald-600 dark:text-emerald-400 font-medium flex items-center justify-center gap-2">
+                <span className="text-emerald-600 dark:text-emerald-400 text-sm font-medium flex items-center justify-center gap-2">
                   <CheckCircle className="w-4 h-4" /> Board is valid
                 </span>
               )}
@@ -747,14 +788,6 @@ const App: React.FC = () => {
               </div>
             )}
 
-            {/* Random Generator Button */}
-            <button
-              onClick={() => setShowGeneratorModal(true)}
-              className="w-full mb-6 flex items-center justify-center gap-2 bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 text-white py-3 px-4 rounded-lg font-medium transition-all shadow-sm hover:shadow active:scale-[0.98]"
-            >
-              <Dices className="w-5 h-5" /> Random Level
-            </button>
-
             <div className="relative group pt-4 border-t border-slate-100 dark:border-slate-800">
               <input
                 type="file"
@@ -827,25 +860,23 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          {/* Instructions */}
-          <div className="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-xl text-sm text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
-            <h3 className="font-bold text-slate-800 dark:text-slate-200 mb-2">How to Play</h3>
-            <ul className="list-disc pl-4 space-y-1 marker:text-slate-400">
-              <li>Place exactly one <span className="inline-block align-middle"><Crown className="w-3 h-3 text-amber-600 dark:text-amber-500 fill-current" /></span> in each <strong>row</strong>, <strong>column</strong>, and <strong>colored block</strong>.</li>
-              <li>Queens cannot touch each other, not even diagonally.</li>
-              <li>Click once for <X className="inline w-3 h-3" /> (empty), click again for <Crown className="inline w-3 h-3" /> (Queen).</li>
-            </ul>
-          </div>
+          {/* Instructions moved to footer */}
         </div>
       </div>
 
       {/* History Modal */}
       {showHistoryModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col border border-slate-200 dark:border-slate-700 animate-in zoom-in-95 duration-200">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setShowHistoryModal(false)}
+        >
+          <div
+            className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col border border-slate-200 dark:border-slate-700 animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center sticky top-0 bg-white dark:bg-slate-900 rounded-t-xl z-10">
               <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                <History className="w-5 h-5 text-indigo-500" /> Solve History
+                <History className="w-5 h-5 text-indigo-500" /> Solved History Logs
               </h2>
               <div className="flex gap-2">
                 {history.length > 0 && (
@@ -883,10 +914,10 @@ const App: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {history.map(item => (
+                  {history.slice(0, 100).map(item => (
                     <div
                       key={item.id}
-                      className="group flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-500 hover:shadow-md transition-all"
+                      className="group flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-500 hover:shadow-md transition-all content-visibility-auto contain-intrinsic-size-[88px]"
                     >
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
@@ -904,12 +935,21 @@ const App: React.FC = () => {
                           </span>
                         </div>
                       </div>
-                      <button
-                        onClick={() => loadHistoryItem(item)}
-                        className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 group-hover:border-indigo-200 dark:group-hover:border-indigo-700 transition-colors"
-                      >
-                        <Eye className="w-4 h-4" /> View
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => loadHistoryItem(item)}
+                          className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 group-hover:border-indigo-200 dark:group-hover:border-indigo-700 transition-colors"
+                        >
+                          <Eye className="w-4 h-4" /> View
+                        </button>
+                        <button
+                          onClick={(e) => deleteHistoryEntry(item.id, e)}
+                          className="p-1.5 text-slate-400 hover:text-red-500 transition-colors"
+                          title="Delete Entry"
+                        >
+                          <CircleX className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -919,10 +959,15 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* Generator Modal */}
       {showGeneratorModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-700 animate-in zoom-in-95 duration-200 overflow-hidden">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setShowGeneratorModal(false)}
+        >
+          <div
+            className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-700 animate-in zoom-in-95 duration-200 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center">
               <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                 <Dices className="w-5 h-5 text-fuchsia-500" /> Generate Level
@@ -974,7 +1019,7 @@ const App: React.FC = () => {
                     </button>
                   ))}
                 </div>
-                <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                <p className="mt-2 text-xs text-slate-500 dark:text-slate-400 font-medium text-center min-h-[1.5em]">
                   {genDifficulty === 'Easy' && "Simple, blocky regions."}
                   {genDifficulty === 'Medium' && "Balanced layout."}
                   {genDifficulty === 'Hard' && "Complex, winding regions."}
@@ -991,6 +1036,22 @@ const App: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Footer Instructions & Credits */}
+      <footer className="mt-8 mb-6 text-center space-y-6 max-w-2xl mx-auto px-4">
+        <div className="bg-white/50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-200/50 dark:border-slate-700/50 backdrop-blur-sm">
+          <h3 className="font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center justify-center gap-2">
+            <HelpCircle className="w-4 h-4" /> How to Play
+          </h3>
+          <ul className="text-slate-600 dark:text-slate-400 text-sm space-y-2 max-w-lg mx-auto leading-relaxed">
+            <li>Place exactly one <Crown className="inline w-3 h-3 text-amber-500 mx-1" /> in each <strong>row</strong>, <strong>column</strong>, and <strong>colored region</strong>.</li>
+            <li>Queens cannot touch each other, not even diagonally.</li>
+          </ul>
+        </div>
+
+        <div className="text-slate-400 dark:text-slate-500 text-xs font-medium animate-pulse">
+          Built with 🧠 and ☕ by Krishna Kanth B
+        </div>
+      </footer>
     </div>
   );
 };
