@@ -83,6 +83,26 @@ Major packages used:
 
 ---
 
+## 🧩 How the Solver and Generator Work
+
+### 🔍 Backtracking Solver
+The solver uses a classical "Backtracking" algorithm. It works like a smart "trial and error" system:
+1.  It tries to place a queen in the first row.
+2.  It moves to the next row and searches for a valid spot that doesn't conflict with the first queen.
+3.  If it gets stuck (no valid spots left in a row), it goes back to the previous row and moves that queen to its next possible position.
+4.  It repeats this until a queen is safely placed in every single row.
+
+### 🎲 Random Level Generator
+The generator uses an "Inside-Out" approach to ensure every level is solvable:
+1.  **Place Queens First**: It first finds a valid layout of queens that follow the row, column, and "no-touch" rules.
+2.  **Grow Regions**: It treats each queen as a "seed" and grows colored regions around them using a randomized flood-fill algorithm until the whole board is filled.
+3.  **Difficulty Tuning**: 
+    -   **Easy**: Regions grow in simple, blocky shapes.
+    -   **Hard**: Regions grow in a more chaotic, winding way, making it much harder to visualize the solution.
+4.  **Ensuring Uniqueness**: The generator leverages a randomized seed approach by shuffling queen candidates and using `Math.random()` during the region expansion phase, ensuring an infinite variety of unique levels.
+
+---
+
 ## 📖 Related Documentation
 -   **[Design Philosophy](DESIGN_PHILOSOPHY.md)**: The rationale and principles behind the project.
 -   **[Contributing Guide](CONTRIBUTING.md)**: How to get involved and contribute to the project.

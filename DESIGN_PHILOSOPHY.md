@@ -43,6 +43,16 @@ The app is designed to fit into a quick daily routine:
 
 ---
 
+## 🧠 Behind the Scenes: Solver & Generator
+
+### 🔍 The Solver (Simple Terms)
+Think of the solver as a very fast explorer. It walks through the board row by row, trying to place a queen. If it ever hits a dead end where no queen can be placed, it simply takes a step back (backtracks) and tries a different path. It’s like solving a maze by always turning left until you hit a wall, then retracing your steps to try the next right turn.
+
+### 🎲 The Generator (Simple Terms)
+Instead of making a map and then trying to hide a treasure, our generator hides the treasure (the queens) first! Because the positions are randomized every single time, you'll never see the same puzzle twice. Once the queens are in valid spots, it colors the map around them. This "Inside-Out" method guarantees that every random level you generate is both unique and perfectly solvable.
+
+---
+
 ## 📖 Related Documentation
 -   **[Code Documentation](CODE_DOCUMENTATION.md)**: Deep dive into the technical implementation.
 -   **[Contributing Guide](CONTRIBUTING.md)**: How to get involved and contribute to the project.
