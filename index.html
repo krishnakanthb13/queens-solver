@@ -1,11 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <title>Queens Solver</title>
+
+  <!-- Add Theme Initialization Script -->
+  <script>
+    (function () {
+      try {
+        const storedTheme = localStorage.getItem('queens-solver-theme');
+        const theme = storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) { }
+    })();
+  </script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -48,6 +64,49 @@
     .dark ::-webkit-scrollbar-thumb:hover {
       background: #475569;
       /* slate-600 */
+    }
+
+    /* Critical Dark Mode Styles to prevent flash with Tailwind CDN */
+    .dark,
+    .dark body,
+    .dark #root {
+      background-color: #020617 !important;
+      /* slate-950 */
+      color: #f8fafc !important;
+      /* slate-100 */
+    }
+
+    .dark .bg-slate-50, 
+    .dark .bg-slate-100, 
+    .dark .bg-slate-200, 
+    .dark .bg-slate-300,
+    .dark .bg-indigo-50,
+    .dark .bg-purple-100,
+    .dark .bg-emerald-50,
+    .dark .bg-amber-100,
+    .dark .bg-red-50,
+    .dark .bg-fuchsia-100 {
+      background-color: #020617 !important; /* slate-950 */
+    }
+
+    .dark .bg-white {
+      background-color: #0f172a !important;
+      /* slate-900 */
+    }
+
+    .dark .text-slate-800, .dark .text-slate-900, .dark .text-slate-700, .dark .text-slate-600 {
+      color: #f1f5f9 !important; /* slate-100 */
+    }
+    
+    .dark .border-slate-100, .dark .border-slate-200, .dark .border-slate-300 {
+      border-color: #334155 !important; /* slate-700 */
+    }
+
+    /* Green glow for footer in dark mode */
+    .dark .footer-glow-green {
+      color: #10b981 !important; /* emerald-500 */
+      text-shadow: 0 0 8px rgba(16, 185, 129, 0.6), 0 0 20px rgba(16, 185, 129, 0.4);
+      transition: all 0.3s ease;
     }
   </style>
   <script type="importmap">

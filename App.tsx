@@ -54,8 +54,14 @@ import {
 } from 'lucide-react';
 
 const App: React.FC = () => {
-  const [gridSize, setGridSize] = useState<number>(DEFAULT_GRID_SIZE);
-  const [numRegions, setNumRegions] = useState<number>(DEFAULT_GRID_SIZE);
+  const [gridSize, setGridSize] = useState<number>(() => {
+    const stored = localStorage.getItem('queens-solver-grid-size');
+    return stored ? parseInt(stored, 10) : DEFAULT_GRID_SIZE;
+  });
+  const [numRegions, setNumRegions] = useState<number>(() => {
+    const stored = localStorage.getItem('queens-solver-grid-size');
+    return stored ? parseInt(stored, 10) : DEFAULT_GRID_SIZE;
+  });
   const [regions, setRegions] = useState<RegionMap>(SAMPLE_PUZZLE_REGIONS_7X7);
   const [cells, setCells] = useState<GridState>(createEmptyGrid(DEFAULT_GRID_SIZE, CellState.EMPTY));
   const [mode, setMode] = useState<AppMode>(AppMode.PLAY);
@@ -64,7 +70,15 @@ const App: React.FC = () => {
   const [isBoardSolvable, setIsBoardSolvable] = useState<boolean>(true);
   const [isSolving, setIsSolving] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    try {
+      const stored = localStorage.getItem('queens-solver-theme');
+      if (stored) return stored === 'dark';
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } catch (e) {
+      return true;
+    }
+  });
 
   // Paint Brush State
   const [isBrushActive, setIsBrushActive] = useState(false);
@@ -75,12 +89,21 @@ const App: React.FC = () => {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
 
-  const [visionModel, setVisionModel] = useState<'gemini' | 'vercel' | 'aiml'>('vercel');
+  const [visionModel, setVisionModel] = useState<'gemini' | 'vercel' | 'aiml'>(() => {
+    const stored = localStorage.getItem('queens-solver-vision-model');
+    return (stored as any) || 'vercel';
+  });
 
   // Generator State
   const [showGeneratorModal, setShowGeneratorModal] = useState(false);
-  const [genSize, setGenSize] = useState<number>(8);
-  const [genDifficulty, setGenDifficulty] = useState<Difficulty>('Medium');
+  const [genSize, setGenSize] = useState<number>(() => {
+    const stored = localStorage.getItem('queens-solver-gen-size');
+    return stored ? parseInt(stored, 10) : 8;
+  });
+  const [genDifficulty, setGenDifficulty] = useState<Difficulty>(() => {
+    const stored = localStorage.getItem('queens-solver-gen-diff');
+    return (stored as Difficulty) || 'Medium';
+  });
 
   // File upload ref
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -97,12 +120,14 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Toggle Dark Mode class on document
+  // Toggle Dark Mode class on document and persist
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
+      localStorage.setItem('queens-solver-theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      localStorage.setItem('queens-solver-theme', 'light');
     }
   }, [isDarkMode]);
 
@@ -146,6 +171,23 @@ const App: React.FC = () => {
     }
     return () => { document.body.style.overflow = 'unset'; };
   }, [showHistoryModal]);
+
+  // Persistence for settings
+  useEffect(() => {
+    localStorage.setItem('queens-solver-grid-size', gridSize.toString());
+  }, [gridSize]);
+
+  useEffect(() => {
+    localStorage.setItem('queens-solver-vision-model', visionModel);
+  }, [visionModel]);
+
+  useEffect(() => {
+    localStorage.setItem('queens-solver-gen-size', genSize.toString());
+  }, [genSize]);
+
+  useEffect(() => {
+    localStorage.setItem('queens-solver-gen-diff', genDifficulty);
+  }, [genDifficulty]);
 
   // Scroll Lock for Generator Modal
   useEffect(() => {
@@ -915,7 +957,7 @@ const App: React.FC = () => {
           </ul>
         </div>
 
-        <div className="text-slate-400 dark:text-slate-500 text-xs font-medium animate-pulse">
+        <div className="text-slate-400 dark:text-slate-500 text-xs font-medium animate-pulse footer-glow-green">
           Built with 🧠, ☕ and 🤖 AI by Krishna Kanth B
         </div>
       </footer>
