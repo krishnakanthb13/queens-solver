@@ -54,16 +54,45 @@ import {
 } from 'lucide-react';
 
 const App: React.FC = () => {
-  const [gridSize, setGridSize] = useState<number>(() => {
-    const stored = localStorage.getItem('queens-solver-grid-size');
-    return stored ? parseInt(stored, 10) : DEFAULT_GRID_SIZE;
-  });
-  const [numRegions, setNumRegions] = useState<number>(() => {
-    const stored = localStorage.getItem('queens-solver-grid-size');
-    return stored ? parseInt(stored, 10) : DEFAULT_GRID_SIZE;
-  });
-  const [regions, setRegions] = useState<RegionMap>(SAMPLE_PUZZLE_REGIONS_7X7);
-  const [cells, setCells] = useState<GridState>(createEmptyGrid(DEFAULT_GRID_SIZE, CellState.EMPTY));
+  // Get initial grid size from localStorage
+  const getInitialGridSize = (): number => {
+    try {
+      const stored = localStorage.getItem('queens-solver-grid-size');
+      if (stored) {
+        const size = parseInt(stored, 10);
+        if (size >= 5 && size <= 12) return size;
+      }
+    } catch (e) { }
+    return DEFAULT_GRID_SIZE;
+  };
+
+  // Get initial regions based on grid size or from localStorage
+  const getInitialRegions = (size: number): RegionMap => {
+    try {
+      const stored = localStorage.getItem('queens-solver-regions');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Validate that the stored regions match the current grid size
+        if (Array.isArray(parsed) && parsed.length === size &&
+          parsed.every(row => Array.isArray(row) && row.length === size)) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load regions from localStorage', e);
+    }
+    // Fallback to default samples or empty grid
+    if (size === 7) return SAMPLE_PUZZLE_REGIONS_7X7;
+    if (size === 9) return SAMPLE_PUZZLE_REGIONS_9X9;
+    return createEmptyGrid(size, 0);
+  };
+
+  const initialGridSize = getInitialGridSize();
+
+  const [gridSize, setGridSize] = useState<number>(initialGridSize);
+  const [numRegions, setNumRegions] = useState<number>(initialGridSize);
+  const [regions, setRegions] = useState<RegionMap>(() => getInitialRegions(initialGridSize));
+  const [cells, setCells] = useState<GridState>(() => createEmptyGrid(initialGridSize, CellState.EMPTY));
   const [mode, setMode] = useState<AppMode>(AppMode.PLAY);
   const [selectedColorId, setSelectedColorId] = useState<number>(0);
   const [errors, setErrors] = useState<Set<string>>(new Set());
@@ -113,10 +142,30 @@ const App: React.FC = () => {
     try {
       const stored = localStorage.getItem('queens-solver-history');
       if (stored) {
-        setHistory(JSON.parse(stored));
+        const parsed = JSON.parse(stored);
+        // Validate history items to prevent crashes from corrupted data
+        if (Array.isArray(parsed)) {
+          const validHistory = parsed.filter((item: any) =>
+            item &&
+            typeof item.id === 'string' &&
+            typeof item.timestamp === 'number' &&
+            typeof item.durationMs === 'number' &&
+            typeof item.gridSize === 'number' &&
+            Array.isArray(item.regions) &&
+            Array.isArray(item.solution)
+          );
+          setHistory(validHistory);
+          // If some items were invalid, update localStorage with clean data
+          if (validHistory.length !== parsed.length) {
+            console.warn(`Removed ${parsed.length - validHistory.length} invalid history entries`);
+            localStorage.setItem('queens-solver-history', JSON.stringify(validHistory));
+          }
+        }
       }
     } catch (e) {
       console.error("Failed to load history", e);
+      // Clear corrupted history data
+      localStorage.removeItem('queens-solver-history');
     }
   }, []);
 
@@ -176,6 +225,15 @@ const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('queens-solver-grid-size', gridSize.toString());
   }, [gridSize]);
+
+  // Persist regions when they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('queens-solver-regions', JSON.stringify(regions));
+    } catch (e) {
+      console.error('Failed to save regions to localStorage', e);
+    }
+  }, [regions]);
 
   useEffect(() => {
     localStorage.setItem('queens-solver-vision-model', visionModel);

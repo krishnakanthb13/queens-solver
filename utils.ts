@@ -31,10 +31,22 @@ export const checkErrors = (
   regions: RegionMap
 ): Set<string> => {
   const errors = new Set<string>();
+
+  // Validate inputs to prevent crashes
+  if (!cells || !regions || !Array.isArray(cells) || !Array.isArray(regions)) {
+    return errors;
+  }
+
+  // Ensure arrays match the expected size
+  if (cells.length < size || regions.length < size) {
+    return errors;
+  }
+
   const queens: GridPos[] = [];
 
-  // Collect all queens
+  // Collect all queens with bounds checking
   for (let r = 0; r < size; r++) {
+    if (!cells[r] || cells[r].length < size) continue;
     for (let c = 0; c < size; c++) {
       if (cells[r][c] === CellState.QUEEN) {
         queens.push({ r, c });
@@ -47,15 +59,19 @@ export const checkErrors = (
     for (let j = i + 1; j < queens.length; j++) {
       const q1 = queens[i];
       const q2 = queens[j];
-      
+
       let conflict = false;
 
       // Row conflict
       if (q1.r === q2.r) conflict = true;
       // Col conflict
       else if (q1.c === q2.c) conflict = true;
-      // Region conflict
-      else if (regions[q1.r][q1.c] === regions[q2.r][q2.c]) conflict = true;
+      // Region conflict (with bounds checking)
+      else if (
+        regions[q1.r] && regions[q1.r][q1.c] !== undefined &&
+        regions[q2.r] && regions[q2.r][q2.c] !== undefined &&
+        regions[q1.r][q1.c] === regions[q2.r][q2.c]
+      ) conflict = true;
       // Touch conflict
       else if (Math.abs(q1.r - q2.r) <= 1 && Math.abs(q1.c - q2.c) <= 1) conflict = true;
 
