@@ -15,6 +15,7 @@ if not exist "node_modules\" (
 :: though here it will occupy the foreground which is intended.
 echo Server is starting. Press 'q' in this window to stop the server.
 echo.
-call npm run dev -- --open
+:: call npm run dev -- --open
+call npm run dev -- --port 3002 --open
 
 endlocal
