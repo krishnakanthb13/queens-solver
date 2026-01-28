@@ -3,6 +3,18 @@ setlocal
 echo Starting Queens Solver...
 echo.
 
+:: Check for environment files
+if not exist ".env.local" (
+    if not exist ".env" (
+        if exist ".env.example" (
+            echo .env.local not found. Creating .env from .env.example...
+            copy .env.example .env
+        ) else (
+            echo .env.local and .env.example not found. Please create environment configuration.
+        )
+    )
+)
+
 :: Check if node_modules exists
 if not exist "node_modules\" (
     echo node_modules not found. Installing dependencies...

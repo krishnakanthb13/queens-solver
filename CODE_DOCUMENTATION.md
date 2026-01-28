@@ -18,6 +18,7 @@ The application follows a modular service-oriented design:
 1.  **UI Layer**: `App.tsx` and React components.
 2.  **Logic Layer**: Pure functional services for solving and generating puzzles.
 3.  **Vision Layer**: API-based services for processing screenshot data via AI.
+4. **Environment Management**: Automated setup of `.env` files via launcher scripts using `.env.example`.
 
 ---
 
@@ -63,6 +64,13 @@ The app integrates 3 providers to handle OCR and spatial reasoning for grid extr
 -   **AIML API**: Primary provider using LLM vision models.
 -   **Vercel AI Gateway**: Proxy for various models with optimized latency.
 -   **Google Gemini SDK**: Direct integration with Google's GenAI for native performance.
+
+### 🔑 Environment Variables
+The application relies on environment variables for API configuration. These are defined in `vite.config.ts` and loaded from `.env` or `.env.local`.
+
+- **Template**: `.env.example` provides a blueprint of required keys.
+- **Automation**: `run_app.bat` and `run_app.sh` automatically clones `.env.example` to `.env` if no local configuration is detected, ensuring a smooth first-run experience.
+- **Exposure**: API keys are injected at build time using Vite's `define` configuration.
 
 ---
 

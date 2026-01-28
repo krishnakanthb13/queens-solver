@@ -50,7 +50,13 @@ An interactive web application designed to solve the daily **LinkedIn Queens** p
     ```
 
 3.  **Configure Environment**:
-    Create a `.env.local` file in the root directory and add your API keys:
+    Create a `.env.local` file in the root directory and add your API keys. You can use `.env.example` as a template:
+    ```bash
+    cp .env.example .env.local
+    ```
+    Alternatively, if you run the app using the provided scripts (see below), a `.env` file will be automatically created from the template if no configuration exists.
+
+    **Required Keys**:
     ```env
     # AIML API (Recommended - uses Gemini 3 Pro / Claude Sonnet 4.5)
     AIML_API_KEY=your_aiml_api_key_here
@@ -63,10 +69,15 @@ An interactive web application designed to solve the daily **LinkedIn Queens** p
     ```
 
 4.  **Run the app**:
+    You can use the automated launcher scripts which handle environment setup and dependency checks:
+    - **Windows**: Run `run_app.bat`
+    - **Linux/macOS/Git Bash**: Run `bash run_app.sh`
+
+    Or via npm directly:
     ```bash
     npm run dev
     ```
-    The app will be available at `http://localhost:3000`.
+    The app will be available at `http://localhost:3002`.
 
 ## 🤖 AI Provider Comparison
 
